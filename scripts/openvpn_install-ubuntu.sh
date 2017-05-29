@@ -1,17 +1,21 @@
 #!/bin/bash
 # openvpn server installation
 
-echo "NOTE: This script is to install openvpn server on ubuntu machine."
-
 # Debug variable
-step=2
+step=3
 
 # Global variable
 work_path="./"
 head_text="openvpn_install:"
 
+echo "$head_text NOTE: This script is to install openvpn server on ubuntu machine."
+echo -e "$head_text See the following link for instructions if any problems:\n"
+echo "$head_text https://openvpn.net/index.php/open-source/documentation/howto.html"
+echo -e "$head_text https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-ubuntu-16-04\n"
+
+
 #----------------------------------------
-# Step 1 Done
+# Step 1:
 # Check if user wants to install openvpn
 if [ $step -lt 1 ]; then
 	exit
@@ -27,7 +31,7 @@ while true; do
 done
 
 #----------------------------------------
-# Step 2 Install necessary packages
+# Step 2: Install necessary packages
 ## Install openvpn
 if [ $step -lt 2 ]; then
 	exit
@@ -52,7 +56,7 @@ else
 	echo "$head_text openvpn already installed, continue"
 fi
 
-# Install python3 if not there
+# Check if python3 is installed
 dpkg -s python3 > ./log
 status=$?
 if [ $status != 0 ]; then
@@ -67,30 +71,37 @@ if [ $step -lt 3 ]; then
 	exit
 fi
 
-# ## Backup file to working directory
-# file_path="/etc/sysctl.conf"
-# file_name="sysctl.conf"
-
-# cp $file_path "$work_path$file_name.copy"
-# status=$?
-# if [ $status != 0 ]; then
-# 	echo "Failed to copy $file_path, make sure you have the right previlege on working path"
-# 	exit
-# fi
-
-# Enable IP forwarding
-sudo sysctl -w net.ipv4.ip_forward=1
+# Create backup directory for file changes
+backup_path="${work_path}backup/" # backup path is $work_path + "/backup"
+mkdir -p "$backup_path"
 status=$?
 if [ $status != 0 ]; then
-	echo "Failed to enable ip forwarding!"
+	echo "Failed to create backup directory. Please check if you have the write previlege on path: ${backup_path}"
 	exit
 fi
 
+# Enable IP forwarding
+## Backup file to working directory
+file_path="/etc/sysctl.conf"
+file_name="sysctl.conf"
+copy_path="${backup_path}${file_name}.copy.$(date +"%Y%m%d_%H%M%S")"
 
-#cp ./abc ./abc.copy
-#status=$?
-#echo "Copy Code: $status - Successful"
-#if [ $status != 0 ]; then
-#   echo "Copy Code: $status - Unsuccessful"
-#fi
+cp $file_path $copy_path
+status=$?
+if [ $status != 0 ]; then
+	echo "Failed to backup file: ${file_path}. Please check if you have the write previlege on path: ${backup_path}"
+	exit
+fi
+
+## Change file context for enabling ip forwarding
+
+# # Enable IP forwarding
+# sudo sysctl -w net.ipv4.ip_forward=1
+# status=$?
+# if [ $status != 0 ]; then
+# 	echo "Failed to enable ip forwarding!"
+# 	exit
+# fi
+
+
 
