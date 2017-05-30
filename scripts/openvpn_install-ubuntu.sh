@@ -14,18 +14,42 @@ echo "$head_text https://openvpn.net/index.php/open-source/documentation/howto.h
 echo -e "$head_text https://www.digitalocean.com/community/tutorials/how-to-set-up-an-openvpn-server-on-ubuntu-16-04\n"
 
 
+###### Functions
+#----------------------------------------
+
+# Backup file to target path
+# $0 should be the 1st argument, which is command
+# $1 target file path
+# $2 backup file path
+function func_backup_file()
+{
+	file_path=$1
+	backup_path=$2
+	file_name=$(basename ${file_path})
+	copy_path="${backup_path}${file_name}.copy.$(date +"%Y%m%d_%H%M%S")"
+
+	cp $file_path $copy_path
+	status=$?
+	if [ $status != 0 ]; then
+		echo "Failed to backup file: ${file_path}. Please check if you have the write privilege on path: ${backup_path}"
+		exit 1
+	fi
+}
+
+
+###### Main
 #----------------------------------------
 # Step 1:
 # Check if user wants to install openvpn
 if [ $step -lt 1 ]; then
-	exit
+	exit 0
 fi
 
 while true; do
     read -p "$head_text Do you wish to install openvpn on this machine? (y/n): " yn
     case $yn in
         [Yy]* ) break;;
-        [Nn]* ) exit;;
+        [Nn]* ) exit 1;;
         * ) echo "$head_text Please answer y(yes) or n(no).";;
     esac
 done
@@ -34,10 +58,11 @@ done
 # Step 2: Install necessary packages
 ## Install openvpn
 if [ $step -lt 2 ]; then
-	exit
+	exit 0
 fi
 
 ## Check if openvpn is installed
+echo "$head_text Checking if openvpn is installed..."
 dpkg -s openvpn > ./log
 status=$?
 
@@ -49,7 +74,7 @@ if [ $status != 0 ]; then
 	status=$?
 	if [ $status != 0 ]; then
 		echo "$head_text Failed to install openvpn"
-		exit
+		exit 1
 	fi
 	echo "$head_text openvpn installed success!"
 else
@@ -57,43 +82,60 @@ else
 fi
 
 # Check if python3 is installed
+echo "$head_text Checking if python3 is installed..."
 dpkg -s python3 > ./log
 status=$?
 if [ $status != 0 ]; then
 	echo "Python is not installed. Please install python before running this script"
-	exit
+	exit 1
 fi
 
 #----------------------------------------
 # Step 3
 # Configure settings for openvpn
 if [ $step -lt 3 ]; then
-	exit
+	exit 0
 fi
 
 # Create backup directory for file changes
+echo "$head_text Creating path for file backup..."
 backup_path="${work_path}backup/" # backup path is $work_path + "/backup"
 mkdir -p "$backup_path"
 status=$?
 if [ $status != 0 ]; then
-	echo "Failed to create backup directory. Please check if you have the write previlege on path: ${backup_path}"
-	exit
+	echo "Failed to create backup directory. Please check if you have the write privilege on path: ${backup_path}"
+	exit 1
 fi
 
 # Enable IP forwarding
 ## Backup file to working directory
+echo "$head_text Backing up file: ${file_path}..."
 file_path="/etc/sysctl.conf"
-file_name="sysctl.conf"
-copy_path="${backup_path}${file_name}.copy.$(date +"%Y%m%d_%H%M%S")"
+func_backup_file ${file_path} ${backup_path}
 
-cp $file_path $copy_path
+## Change file context for enabling ip forwarding; A python script is used for this change
+echo "$head_text Enabling ip forwarding: ${file_path}..."
+edit_file_script="edit_file.py"
+sudo ${work_path}${edit_file_script} $file_path
 status=$?
 if [ $status != 0 ]; then
-	echo "Failed to backup file: ${file_path}. Please check if you have the write previlege on path: ${backup_path}"
-	exit
+	echo "Failed to edit file: ${file_path}. Please check if you have admin privilege"
+	exit 1
 fi
+sudo sysctl -p # update session for the changes
 
-## Change file context for enabling ip forwarding
+#----------------------------------------
+# Step 4
+# Adjust UFW settings
+## Find public network interface of the machine
+result=$(ip route | grep default)
+stringarray=($result)
+public_interface=${stringarray[4]}
+
+
+
+# End
+exit 0
 
 # # Enable IP forwarding
 # sudo sysctl -w net.ipv4.ip_forward=1
