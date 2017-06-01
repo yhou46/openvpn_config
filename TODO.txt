@@ -1,2 +1,8 @@
+
+2017-05-31:
+Still something related to UFW need to be done
+Create script for generating certificate for client and server
+
+Week before:
 add command parser to edit_file.py
 continue change shell script to hand UFW config
