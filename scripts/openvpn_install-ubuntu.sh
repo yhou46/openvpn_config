@@ -7,6 +7,7 @@ step=3
 # Global variable
 work_path="./"
 head_text="openvpn_install:"
+log_path="${work_path}log"
 
 echo "$head_text NOTE: This script is to install openvpn server on ubuntu machine."
 echo -e "$head_text See the following link for instructions if any problems:\n"
@@ -28,10 +29,10 @@ function func_backup_file()
 	file_name=$(basename ${file_path})
 	copy_path="${backup_path}${file_name}.copy.$(date +"%Y%m%d_%H%M%S")"
 
-	cp $file_path $copy_path
+	sudo cp $file_path $copy_path
 	status=$?
 	if [ $status != 0 ]; then
-		echo "Failed to backup file: ${file_path}. Please check if you have the write privilege on path: ${backup_path}"
+		echo "Failed to backup file: ${file_path}. Please check error message above"
 		exit 1
 	fi
 }
@@ -63,7 +64,7 @@ fi
 
 ## Check if openvpn is installed
 echo "$head_text Checking if openvpn is installed..."
-dpkg -s openvpn > ./log
+dpkg -s openvpn > ${log_path}
 status=$?
 
 ## Not there then install it
@@ -108,30 +109,87 @@ if [ $status != 0 ]; then
 fi
 
 # Enable IP forwarding
+file_path="/etc/sysctl.conf"
+
 ## Backup file to working directory
 echo "$head_text Backing up file: ${file_path}..."
-file_path="/etc/sysctl.conf"
 func_backup_file ${file_path} ${backup_path}
 
 ## Change file context for enabling ip forwarding; A python script is used for this change
 echo "$head_text Enabling ip forwarding: ${file_path}..."
 edit_file_script="edit_file.py"
-sudo ${work_path}${edit_file_script} $file_path
+
+## Run script to do the file change
+sudo ${work_path}${edit_file_script} -m ipv4 -f $file_path
 status=$?
 if [ $status != 0 ]; then
-	echo "Failed to edit file: ${file_path}. Please check if you have admin privilege"
+	echo "Failed to edit file: ${file_path}. Please check error message above"
 	exit 1
 fi
+
+## Update session change
+echo "$head_text Updating session change..."
 sudo sysctl -p # update session for the changes
 
 #----------------------------------------
 # Step 4
 # Adjust UFW settings
+echo "$head_text Changing UFW settings..."
+
 ## Find public network interface of the machine
 result=$(ip route | grep default)
 stringarray=($result)
 public_interface=${stringarray[4]}
+echo "$head_text Found public network interface name: ${public_interface}"
 
+file_path="/etc/ufw/before.rules"
+
+## Check if file already being changed
+keyword="POSTROUTING"
+sudo grep -e ${keyword} ${file_path} > ${log_path}
+status=$?
+
+if [ $status != 0 ]; then
+
+	## not found then do the changes
+
+	## Backup file to working directory
+	echo "$head_text Backing up file: ${file_path}..."
+	func_backup_file ${file_path} ${backup_path}
+
+	## Change file context for enabling ip forwarding; A python script is used for this change
+	echo "$head_text Changing UFW rules: ${file_path}..."
+	edit_file_script="edit_file.py"
+
+	## Run script to do the file change
+	sudo ${work_path}${edit_file_script} -m ufw -f $file_path
+	status=$?
+	if [ $status != 0 ]; then
+		echo "Failed to edit file: ${file_path}. Please check if you have admin privilege"
+		exit 1
+	fi
+	
+else
+
+	echo "$head_text UFW rules already changed"
+	
+fi
+
+# ## Backup file to working directory
+# echo "$head_text Backing up file: ${file_path}..."
+# func_backup_file ${file_path} ${backup_path}
+
+# ## Change file context for enabling ip forwarding; A python script is used for this change
+# echo "$head_text Changing UFW rules: ${file_path}..."
+# edit_file_script="edit_file.py"
+
+# ## Run script to do the file change
+# sudo ${work_path}${edit_file_script} -m ufw -f $file_path
+# status=$?
+# if [ $status != 0 ]; then
+# 	echo "Failed to edit file: ${file_path}. Please check if you have admin privilege"
+# 	exit 1
+# fi
 
 
 # End

@@ -1,5 +1,21 @@
 #!/usr/bin/python3
 import codecs
+import argparse
+import sys
+
+#-------------------------------------------------
+# Constants
+#-------------------------------------------------
+argsMode = \
+{ 
+    "ipv4_mode": "ipv4", 
+    "ufw_mode": "ufw",
+}
+
+
+#-------------------------------------------------
+# Functions
+#-------------------------------------------------
 
 # TODO: cannot handle if # mark is not the 1st character of the line
 # Change file content to enable ipv4 forwarding
@@ -20,6 +36,8 @@ def enableIpv4Forwarding(filename):
         if enableKeyword in line:
             if line[0] == "#":
                 newFileLines.append(enableKeyword + "\n")
+            else:
+                newFileLines.append(line)
             isEnableChanged = True
 
         elif disableKeyword in line and line[0] == "#":
@@ -62,11 +80,52 @@ def changeUfwBeforeRules(filename, publicInterfaceName):
     with codecs.open(filename, "w", "utf-8") as file:
         file.writelines(newFileLines)
 
+def initializeCommandParser():
     
+    parser = argparse.ArgumentParser(description = "Change config files for openvpn installation")
+
+    parser.add_argument( "-m", "--mode", type=str, required=True, choices=argsMode.values(),
+                         help="Mode for this script")
+    parser.add_argument( "-f", "--file", type=str, required=True, help="File name for the change")
+
+    parser.add_argument( "-p", "--pub", type=str, help="Public Interface Name")
+
+
+    # parser.add_argument('--sum', dest='accumulate', action='store_const',
+    #                 const=sum, default=max,
+    #                 help='sum the integers (default: find the max)')
+    return parser
+
+def main(inputArgs):
+
+    # Initialize command line parser and parse
+    parser = initializeCommandParser()
+    parsedArgs = parser.parse_args(inputArgs)
+
+    filename = ""
+    publicInterfaceName = "eth0"
+
+    if parsedArgs.file != None:
+        filename = parsedArgs.file
+
+    if parsedArgs.pub != None:
+        publicInterfaceName = parsedArgs.pub
+
+    if parsedArgs.mode == argsMode.get("ipv4_mode"):
+        enableIpv4Forwarding(filename)
+    elif parsedArgs.mode == argsMode.get("ufw_mode"):
+        changeUfwBeforeRules(filename, publicInterfaceName)
+
+
 # TODO: add command line parser
 if __name__ == "__main__":
     
-    enableIpv4Forwarding("./backup/sysctl.conf")
+    
+    main(sys.argv[1:])
+
+
+
+    #enableIpv4Forwarding("./backup/sysctl.conf")
 
     #changeUfwBeforeRules("test", "eth0")
 
