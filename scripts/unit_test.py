@@ -90,16 +90,24 @@ def test_isComment():
 
 def test_addLineToBeginning():
 
-	configFileEditor.addLineToBeginning("../test/test_doc.txt", "hou = 14\n", 
-										skipComment = True, commentSign = "//")
+	configFileEditor.addLineToBeginning("../test/test_doc.txt", "hello\n", 
+										commentSign = "")
+
+def test_replaceLineInFile():
+
+	configFileEditor.replaceLineInFile("../test/test_doc.txt", 
+										keyword = "replaced", 
+										newLine = "replaced again", commentSign="", count = 2)
 
 
 
 if __name__ == "__main__":
 	
-	test_isComment() 
+	#test_isComment() 
 
 	#test_addLineToBeginning()
+
+	test_replaceLineInFile()
 
 
 
