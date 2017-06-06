@@ -14,8 +14,13 @@ import sys
 # @commentSign: the comment sign used to mark the line as comment, empty string means no comments in files
 # @count: number of replacements. The replacement will perform <count> times, counting from start of the file; 
 #         count = -1 means replace all of them; count = 0 means no replacement
+#
+# return:
+# return the number of replacement happened
 def replaceLineInFile(filename, keyword, newLine, commentSign="", count = -1):
     
+    replacedCount = 0
+
     with codecs.open(filename, "r+", "utf-8") as file:
         lines = file.readlines()
 
@@ -25,6 +30,7 @@ def replaceLineInFile(filename, keyword, newLine, commentSign="", count = -1):
                 
                 newFileLines.append( newLine + "\n" )
                 count -= 1
+                replacedCount += 1
                 
             else:
                 newFileLines.append(line)
@@ -33,7 +39,7 @@ def replaceLineInFile(filename, keyword, newLine, commentSign="", count = -1):
     with codecs.open(filename, "w", "utf-8") as file:
         file.writelines(newFileLines)
 
-    return
+    return replacedCount
 
 
 # Check if the line is a comment

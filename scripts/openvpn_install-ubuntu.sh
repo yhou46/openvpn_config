@@ -133,8 +133,8 @@ sudo sysctl -p # update session for the changes
 
 #----------------------------------------
 # Step 4
-# Adjust UFW settings
-echo "$head_text Changing UFW settings..."
+# Adjust UFW before rules
+echo "$head_text Changing UFW before rules..."
 
 ## Find public network interface of the machine
 result=$(ip route | grep default)
@@ -162,7 +162,7 @@ if [ $status != 0 ]; then
 	edit_file_script="edit_file.py"
 
 	## Run script to do the file change
-	sudo ${work_path}${edit_file_script} -m ufw -f $file_path
+	sudo ${work_path}${edit_file_script} -m ufw_bef -f $file_path -p ${public_interface}
 	status=$?
 	if [ $status != 0 ]; then
 		echo "Failed to edit file: ${file_path}. Please check if you have admin privilege"
@@ -175,24 +175,33 @@ else
 	
 fi
 
-# ## Backup file to working directory
-# echo "$head_text Backing up file: ${file_path}..."
-# func_backup_file ${file_path} ${backup_path}
+#----------------------------------------
+# Step 5
+# Enable UFW forward packets
+echo "$head_text Enable UFW forward packets..."
 
-# ## Change file context for enabling ip forwarding; A python script is used for this change
-# echo "$head_text Changing UFW rules: ${file_path}..."
-# edit_file_script="edit_file.py"
+# Enable IP forwarding
+file_path="/etc/default/ufw"
 
-# ## Run script to do the file change
-# sudo ${work_path}${edit_file_script} -m ufw -f $file_path
-# status=$?
-# if [ $status != 0 ]; then
-# 	echo "Failed to edit file: ${file_path}. Please check if you have admin privilege"
-# 	exit 1
-# fi
+## Backup file to working directory
+echo "$head_text Backing up file: ${file_path}..."
+func_backup_file ${file_path} ${backup_path}
+
+## Enable UFW forward packets; A python script is used for this change
+echo "$head_text Enable UFW forward packets: ${file_path}..."
+edit_file_script="edit_file.py"
+
+## Run script to do the file change
+sudo ${work_path}${edit_file_script} -m ufw_for -f $file_path
+status=$?
+if [ $status != 0 ]; then
+	echo "Failed to edit file: ${file_path}. Please check error message above"
+	exit 1
+fi
 
 
 # End
+echo "$head_text DONE. Openvpn is installed and configured successfully"
 exit 0
 
 # # Enable IP forwarding

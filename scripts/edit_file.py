@@ -3,13 +3,17 @@ import codecs
 import argparse
 import sys
 
+# Self libraries
+import configFileEditor
+
 #-------------------------------------------------
 # Constants
 #-------------------------------------------------
 argsMode = \
 { 
     "ipv4_mode": "ipv4", 
-    "ufw_mode": "ufw",
+    "ufw_before_rules_mode": "ufw_bef", # ufw before rules
+    "ufw_forward_mode": "ufw_for" # ufw forward rules
 }
 
 
@@ -65,20 +69,17 @@ def changeUfwBeforeRules(filename, publicInterfaceName):
                     "COMMIT\n" + \
                     "# END OPENVPN RULES\n\n"
 
-    lines = ""
-    with codecs.open(filename, "r+", "utf-8") as file:
-        lines = file.readlines()
+    configFileEditor.addLineToBeginning(filename, insertLine, commentSign = "#")
+    return
 
+def enableUfwForwardedPackets(filename):
 
-    # Insert the new text right after the first empty new line
-    newFileLines = []
-    for line in lines:
-        newFileLines.append(line)
-        if line[0] == "\n":
-            newFileLines.append(insertLine)
-
-    with codecs.open(filename, "w", "utf-8") as file:
-        file.writelines(newFileLines)
+    configFileEditor.replaceLineInFile(filename = filename, 
+                                        keyword = "DEFAULT_FORWARD_POLICY", 
+                                        newLine = "DEFAULT_FORWARD_POLICY=\"ACCEPT\"", 
+                                        commentSign="#", 
+                                        count = 1)
+    return
 
 def initializeCommandParser():
     
@@ -91,9 +92,7 @@ def initializeCommandParser():
     parser.add_argument( "-p", "--pub", type=str, help="Public Interface Name")
 
 
-    # parser.add_argument('--sum', dest='accumulate', action='store_const',
-    #                 const=sum, default=max,
-    #                 help='sum the integers (default: find the max)')
+    
     return parser
 
 def main(inputArgs):
@@ -113,8 +112,10 @@ def main(inputArgs):
 
     if parsedArgs.mode == argsMode.get("ipv4_mode"):
         enableIpv4Forwarding(filename)
-    elif parsedArgs.mode == argsMode.get("ufw_mode"):
+    elif parsedArgs.mode == argsMode.get("ufw_before_rules_mode"):
         changeUfwBeforeRules(filename, publicInterfaceName)
+    elif parsedArgs.mode == argsMode.get("ufw_forward_mode"):
+        enableUfwForwardedPackets(filename)
 
 
 # TODO: add command line parser
