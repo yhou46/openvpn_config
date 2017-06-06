@@ -1,5 +1,8 @@
 TODO log:
 
+2017-06-05:
+Create script for generating certificate for client and server
+
 2017-05-31:
 Still something related to UFW need to be done
 Create script for generating certificate for client and server
