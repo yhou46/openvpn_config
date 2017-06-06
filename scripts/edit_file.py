@@ -22,7 +22,7 @@ argsMode = \
 # key is to make "net.ipv4.ip_forward=1"
 def enableIpv4Forwarding(filename):
 
-    lines = ""
+    lines = []
     with codecs.open(filename, "r+", "utf-8") as file:
         lines = file.readlines()
 

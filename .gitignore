@@ -227,3 +227,4 @@ hs_err_pid*
 # Openvpn repo only
 config/
 keys/
+test/
