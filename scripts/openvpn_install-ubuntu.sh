@@ -2,7 +2,7 @@
 # openvpn server installation
 
 # Debug variable
-step=3
+step=5
 
 # Global variable
 work_path="./"
@@ -133,6 +133,9 @@ sudo sysctl -p # update session for the changes
 
 #----------------------------------------
 # Step 4
+if [ $step -lt 4 ]; then
+	exit 0
+fi
 # Adjust UFW before rules
 echo "$head_text Changing UFW before rules..."
 
@@ -177,6 +180,9 @@ fi
 
 #----------------------------------------
 # Step 5
+if [ $step -lt 5 ]; then
+	exit 0
+fi
 # Enable UFW forward packets
 echo "$head_text Enable UFW forward packets..."
 
