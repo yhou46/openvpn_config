@@ -109,14 +109,15 @@ if [ $status != 0 ]; then
 fi
 
 # Enable IP forwarding
+echo "$head_text Enabling ip forwarding..."
 file_path="/etc/sysctl.conf"
 
 ## Backup file to working directory
-echo "$head_text Backing up file: ${file_path}..."
+echo -e "$head_text \tBacking up file: ${file_path}..."
 func_backup_file ${file_path} ${backup_path}
 
 ## Change file context for enabling ip forwarding; A python script is used for this change
-echo "$head_text Enabling ip forwarding: ${file_path}..."
+echo -e "$head_text \tChanging file (ip forwarding): ${file_path}..."
 edit_file_script="edit_file.py"
 
 ## Run script to do the file change
@@ -128,7 +129,7 @@ if [ $status != 0 ]; then
 fi
 
 ## Update session change
-echo "$head_text Updating session change..."
+echo -e "$head_text \tUpdating session change..."
 sudo sysctl -p # update session for the changes
 
 #----------------------------------------
@@ -143,7 +144,7 @@ echo "$head_text Changing UFW before rules..."
 result=$(ip route | grep default)
 stringarray=($result)
 public_interface=${stringarray[4]}
-echo "$head_text Found public network interface name: ${public_interface}"
+echo -e "$head_text \tFound public network interface name: ${public_interface}"
 
 file_path="/etc/ufw/before.rules"
 
@@ -157,11 +158,11 @@ if [ $status != 0 ]; then
 	## not found then do the changes
 
 	## Backup file to working directory
-	echo "$head_text Backing up file: ${file_path}..."
+	echo -e "$head_text \tBacking up file: ${file_path}..."
 	func_backup_file ${file_path} ${backup_path}
 
 	## Change file context for enabling ip forwarding; A python script is used for this change
-	echo "$head_text Changing UFW rules: ${file_path}..."
+	echo -e "$head_text \tChanging file (UFW rules): ${file_path}..."
 	edit_file_script="edit_file.py"
 
 	## Run script to do the file change
@@ -190,11 +191,11 @@ echo "$head_text Enable UFW forward packets..."
 file_path="/etc/default/ufw"
 
 ## Backup file to working directory
-echo "$head_text Backing up file: ${file_path}..."
+echo -e "$head_text \tBacking up file: ${file_path}..."
 func_backup_file ${file_path} ${backup_path}
 
 ## Enable UFW forward packets; A python script is used for this change
-echo "$head_text Enable UFW forward packets: ${file_path}..."
+echo -e "$head_text \tChanging file (UFW forward packets): ${file_path}..."
 edit_file_script="edit_file.py"
 
 ## Run script to do the file change
