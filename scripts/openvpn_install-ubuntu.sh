@@ -37,6 +37,34 @@ function func_backup_file()
 	fi
 }
 
+# TODO: Need to test
+# Install package if not installed
+# $1 package name
+function func_install_package()
+{
+	packagename=$1
+
+	echo "$head_text Checking if $packagename is installed..."
+	dpkg -s $packagename > ${log_path}
+	status=$?
+
+	## Not there then install it
+	if [ $status != 0 ]; then
+		echo -e "\n$head_text $packagename will be installed on this machine now..."
+		sudo apt-get update
+		sudo apt-get install $packagename
+		status=$?
+		if [ $status != 0 ]; then
+			echo "$head_text Failed to install $packagename"
+			exit 1
+		fi
+		echo "$head_text $packagename installed success!"
+	else
+		echo "$head_text $packagename already installed, continue"
+	fi
+
+	exit 0
+}
 
 ###### Main
 #----------------------------------------
@@ -90,6 +118,9 @@ if [ $status != 0 ]; then
 	echo "Python is not installed. Please install python before running this script"
 	exit 1
 fi
+
+# Check if easy-rsa is installed
+func_install_package easy-rsa
 
 #----------------------------------------
 # Step 3
