@@ -7,13 +7,20 @@ step=3
 
 #-----------------------------------------
 # Global variables
-mode="unknown"
-work_path="./"
-easyrsa_path="unknown"
-log_path="${work_path}log"
-client_name="client1"
 
+## Default variable
+client_name="client1"
+server_name="server"
 head_text="openvpn_config:"
+mode="unknown"
+openvpn_name="default"
+
+## Paths:
+work_path="./" # The path of all the scripts, temporary file location
+easyrsa_path="unknown" # easy-rsa install path
+log_path="${work_path}log" # Path of log file; Not using right now
+install_path="~/bin/openvpn_cfg/${openvpn_name}" # Path of all config files
+
 
 ###### Functions
 #-----------------------------------------
@@ -30,6 +37,16 @@ function func_generate_DH_parameters()
 		echo "${head_text} Failed to generate Diffie Hellman parameters"
 		exit 1
 	fi
+
+	# Copy file to install path
+	cp ./dh*.pem "${install_path}/server"
+
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to copy file!"
+		exit 1
+	fi
+
 	echo "${head_text} Success"
 }
 
@@ -47,21 +64,45 @@ function func_generate_master_CA()
 		echo "${head_text} Failed to generate master Certificate Authority"
 		exit 1
 	fi
+
+	# Copy file to install path
+	cp ./ca.crt "${install_path}/common"
+	cp ./ca.key "${install_path}/common"
+
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to copy file!"
+		exit 1
+	fi
+
 	echo "${head_text} Success"
 }
 
 # Generate certificate & key for server
 function func_generate_cert_server()
 {
+	server_name=$1
+
 	echo "${head_text} Generating certificate & key for server..."
 
-	./build-key-server server
+	./build-key-server $1
 
 	status=$?
 	if [ $status != 0 ]; then
 		echo "${head_text} Failed to generate certificate & key for server"
 		exit 1
 	fi
+
+	# Copy file to install path
+	cp "./${server_name}.crt" "${install_path}/server"
+	cp "./${server_name}.key" "${install_path}/server"
+
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to copy file!"
+		exit 1
+	fi
+
 	echo "${head_text} Success"
 }
 
@@ -80,13 +121,24 @@ function func_generate_cert_client()
 		echo "${head_text} Failed to generate certificate & key for client"
 		exit 1
 	fi
+
+	# Copy file to install path
+	cp "./${client_name}.crt" "${install_path}/client"
+	cp "./${client_name}.key" "${install_path}/client"
+
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to copy file!"
+		exit 1
+	fi
+
 	echo "${head_text} Success"
 }
 
 
 ###### Main
 #-----------------------------------------
-# Step 1
+# Step 1: Command line parser
 if [ $step -lt 1 ]; then
 	exit 0
 fi
@@ -96,13 +148,17 @@ fi
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 #help_message="usage: $0 -m/--mode MODE [-p/--path openvpn install path]\narguments:\n\t-m/--mode {server, client}"
 
+# Define help_message
 read -r -d '' help_message <<- EOM
-usage: $0 -m/--mode MODE [-p/--path easy-rsa path]\n
+usage: $0 -m/--mode MODE [-e/--e_path] [-i/--i_path] [-c/--c_name]\n
 arguments:\n
 \t-m/--mode {server, client, dh, ca}\n
-\t-p/--path easy-rsa path\n
+\t-e/--e_path easy-rsa path\n
+\t-i/--i_path installation path\n
+\t-c/--c_name client name\n
 EOM
 
+# Parse command line arguments
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -114,13 +170,18 @@ case $key in
     shift # past argument
     ;;
 
-    -p|--path)
+    -e|--e_path)
     easyrsa_path="$2"
     shift # past argument
     ;;
 
-    -n|--name)
+    -c|--c_name)
     client_name="$2"
+    shift # past argument
+    ;;
+
+    -i|--i_path)
+    install_path="$2"
     shift # past argument
     ;;
 
@@ -143,7 +204,7 @@ done
 
 
 #-----------------------------------------
-# Step 2
+# Step 2: Install easy-rsa if not found
 if [ $step -lt 2 ]; then
 	exit 0
 fi
@@ -164,7 +225,7 @@ else
 	status=$?
 	if [ $status != 0 ] && [ $easyrsa_path == "unknown" ]; then
 		echo "${head_text} easyrsa is not installed or cannot be found. "
-		echo "${head_text} Please install it using <${install_script}>. Or give the path of easy-rsa using -p"
+		echo "${head_text} Please install it using <${install_script}>. Or give the path of easy-rsa using -e"
 		echo -e "\nIf it is Mac OS, please install openvpn USING Tunnelblick (NOT use the script <${install_script}>)"
 		echo "On Mac, easyrsa path can be get using Tunnelblick -> [Utilities] -> [Open easy-rsa in terminal]"
 		exit 1
@@ -197,11 +258,55 @@ else
 	easyrsa_path=${work_path}easy-rsa
 fi
 
+#-----------------------------------------
+# Step 3 Create installation directory for all config files
+if [ $step -lt 3 ]; then
+	exit 0
+fi
 
+# Check if install is already there
+if [ -d "${install_path}" ]; then
+	echo "$head_text ${install_path} already exists."
+	echo "$head_text you can use -i to set a new install path"
+
+	while true; do
+    read -p "$head_text Continue will override the files in ${install_path}. Do you override files there?(y/n): " yn
+    case $yn in
+        [Yy]* )
+		break
+		;;
+
+        [Nn]* )
+		exit 1
+		;;
+
+        * ) 
+		echo "$head_text Please answer y(yes) or n(no).";;
+    esac
+	done
+
+else
+	echo "$head_text Creating path ${install_path}"
+
+	# Create install path
+	mkdir -p ${install_path}
+
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to create install path: ${install_path}. Please check if you have the privilege"
+		exit 1
+	fi
+
+	mkdir -p "${install_path}/common" # ca file
+	mkdir -p "${install_path}/server" # dh, ca, server.key, server.crt
+	mkdir -p "${install_path}/client" # client.key, client.crt
+
+
+fi
 
 #-----------------------------------------
-# Step 3
-if [ $step -lt 3 ]; then
+# Step 4 Run according to $mode
+if [ $step -lt 4 ]; then
 	exit 0
 fi
 
