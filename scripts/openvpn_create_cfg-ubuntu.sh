@@ -19,7 +19,7 @@ openvpn_name="default"
 work_path="./" # The path of all the scripts, temporary file location
 easyrsa_path="unknown" # easy-rsa install path
 log_path="${work_path}log" # Path of log file; Not using right now
-install_path="~/bin/openvpn_cfg/${openvpn_name}" # Path of all config files
+install_path="${HOME}/bin/openvpn_cfg/${openvpn_name}" # Path of all config files
 
 
 ###### Functions
@@ -39,7 +39,7 @@ function func_generate_DH_parameters()
 	fi
 
 	# Copy file to install path
-	cp ./dh*.pem "${install_path}/server"
+	cp ./keys/dh*.pem "${install_path}/server"
 
 	status=$?
 	if [ $status != 0 ]; then
@@ -66,8 +66,8 @@ function func_generate_master_CA()
 	fi
 
 	# Copy file to install path
-	cp ./ca.crt "${install_path}/common"
-	cp ./ca.key "${install_path}/common"
+	cp ./keys/ca.crt "${install_path}/common"
+	cp ./keys/ca.key "${install_path}/common"
 
 	status=$?
 	if [ $status != 0 ]; then
@@ -94,8 +94,8 @@ function func_generate_cert_server()
 	fi
 
 	# Copy file to install path
-	cp "./${server_name}.crt" "${install_path}/server"
-	cp "./${server_name}.key" "${install_path}/server"
+	cp "./keys/${server_name}.crt" "${install_path}/server"
+	cp "./keys/${server_name}.key" "${install_path}/server"
 
 	status=$?
 	if [ $status != 0 ]; then
@@ -123,8 +123,8 @@ function func_generate_cert_client()
 	fi
 
 	# Copy file to install path
-	cp "./${client_name}.crt" "${install_path}/client"
-	cp "./${client_name}.key" "${install_path}/client"
+	cp "./keys/${client_name}.crt" "${install_path}/client"
+	cp "./keys/${client_name}.key" "${install_path}/client"
 
 	status=$?
 	if [ $status != 0 ]; then
@@ -289,7 +289,7 @@ else
 	echo "$head_text Creating path ${install_path}"
 
 	# Create install path
-	mkdir -p ${install_path}
+	mkdir -p "${install_path}"
 
 	status=$?
 	if [ $status != 0 ]; then
@@ -300,6 +300,8 @@ else
 	mkdir -p "${install_path}/common" # ca file
 	mkdir -p "${install_path}/server" # dh, ca, server.key, server.crt
 	mkdir -p "${install_path}/client" # client.key, client.crt
+
+	echo "${head_text} DONE!"
 
 
 fi
@@ -319,7 +321,7 @@ case "$mode" in
    	;;
 
 	"server_cert")
-	func_generate_cert_server
+	func_generate_cert_server $server_name
 	;;
 
 	"client_cert")
