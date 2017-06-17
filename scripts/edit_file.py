@@ -13,7 +13,8 @@ argsMode = \
 { 
     "ipv4_mode": "ipv4", 
     "ufw_before_rules_mode": "ufw_bef", # ufw before rules
-    "ufw_forward_mode": "ufw_for" # ufw forward rules
+    "ufw_forward_mode": "ufw_for", # ufw forward rules
+    "replace_line_mode": "replace", # replace line in file
 }
 
 
@@ -91,6 +92,10 @@ def initializeCommandParser():
 
     parser.add_argument( "-p", "--pub", type=str, help="Public Interface Name")
 
+    parser.add_argument( "-o", "--old", type=str, help="Old line to be replaced (in quotes)")
+
+    parser.add_argument( "-n", "--new", type=str, help="New line in quotes")
+
 
     
     return parser
@@ -116,6 +121,17 @@ def main(inputArgs):
         changeUfwBeforeRules(filename, publicInterfaceName)
     elif parsedArgs.mode == argsMode.get("ufw_forward_mode"):
         enableUfwForwardedPackets(filename)
+    elif parsedArgs.mode == argsMode.get("replace_line_mode"):
+        if parsedArgs.old != None and parsedArgs.new != None:
+            configFileEditor.replaceLineInFile(filename = filename, 
+                                        keyword = parsedArgs.old, 
+                                        newLine = parsedArgs.new, 
+                                        commentSign="#", 
+                                        count = 1)
+        else:
+            print("Error: no -o and -n command specified in <replace> mode, please see help for instructions")
+            sys.exit(1)
+
 
 
 # TODO: add command line parser

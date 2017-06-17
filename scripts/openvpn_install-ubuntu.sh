@@ -5,9 +5,9 @@
 step=5
 
 # Global variable
-work_path="./"
+work_path="."
 head_text="openvpn_install:"
-log_path="${work_path}log"
+log_path="${work_path}/log"
 
 echo "$head_text NOTE: This script is to install openvpn server on ubuntu machine."
 echo -e "$head_text See the following link for instructions if any problems:\n"
@@ -131,7 +131,7 @@ fi
 
 # Create backup directory for file changes
 echo "$head_text Creating path for file backup..."
-backup_path="${work_path}backup/" # backup path is $work_path + "/backup"
+backup_path="${work_path}/backup/" # backup path is $work_path + "/backup"
 mkdir -p "$backup_path"
 status=$?
 if [ $status != 0 ]; then
@@ -152,7 +152,7 @@ echo -e "$head_text \tChanging file (ip forwarding): ${file_path}..."
 edit_file_script="edit_file.py"
 
 ## Run script to do the file change
-sudo ${work_path}${edit_file_script} -m ipv4 -f $file_path
+sudo "${work_path}/${edit_file_script} -m ipv4 -f $file_path"
 status=$?
 if [ $status != 0 ]; then
 	echo "Failed to edit file: ${file_path}. Please check error message above"
@@ -197,7 +197,7 @@ if [ $status != 0 ]; then
 	edit_file_script="edit_file.py"
 
 	## Run script to do the file change
-	sudo ${work_path}${edit_file_script} -m ufw_bef -f $file_path -p ${public_interface}
+	sudo "${work_path}/${edit_file_script} -m ufw_bef -f $file_path -p ${public_interface}"
 	status=$?
 	if [ $status != 0 ]; then
 		echo "Failed to edit file: ${file_path}. Please check if you have admin privilege"
@@ -230,7 +230,7 @@ echo -e "$head_text \tChanging file (UFW forward packets): ${file_path}..."
 edit_file_script="edit_file.py"
 
 ## Run script to do the file change
-sudo ${work_path}${edit_file_script} -m ufw_for -f $file_path
+sudo "${work_path}/${edit_file_script} -m ufw_for -f $file_path"
 status=$?
 if [ $status != 0 ]; then
 	echo "Failed to edit file: ${file_path}. Please check error message above"
