@@ -62,8 +62,6 @@ function func_install_package()
 	else
 		echo "$head_text $packagename already installed, continue"
 	fi
-
-	exit 0
 }
 
 ###### Main
@@ -152,7 +150,7 @@ echo -e "$head_text \tChanging file (ip forwarding): ${file_path}..."
 edit_file_script="edit_file.py"
 
 ## Run script to do the file change
-sudo "${work_path}/${edit_file_script} -m ipv4 -f $file_path"
+sudo ${work_path}/${edit_file_script} -m ipv4 -f $file_path
 status=$?
 if [ $status != 0 ]; then
 	echo "Failed to edit file: ${file_path}. Please check error message above"
@@ -197,7 +195,7 @@ if [ $status != 0 ]; then
 	edit_file_script="edit_file.py"
 
 	## Run script to do the file change
-	sudo "${work_path}/${edit_file_script} -m ufw_bef -f $file_path -p ${public_interface}"
+	sudo ${work_path}/${edit_file_script} -m ufw_bef -f $file_path -p ${public_interface}
 	status=$?
 	if [ $status != 0 ]; then
 		echo "Failed to edit file: ${file_path}. Please check if you have admin privilege"
@@ -230,13 +228,25 @@ echo -e "$head_text \tChanging file (UFW forward packets): ${file_path}..."
 edit_file_script="edit_file.py"
 
 ## Run script to do the file change
-sudo "${work_path}/${edit_file_script} -m ufw_for -f $file_path"
+sudo ${work_path}/${edit_file_script} -m ufw_for -f $file_path
 status=$?
 if [ $status != 0 ]; then
 	echo "Failed to edit file: ${file_path}. Please check error message above"
 	exit 1
 fi
 
+#----------------------------------------
+# Step 6
+if [ $step -lt 6 ]; then
+	exit 0
+fi
+
+echo "$head_text Open the OpenVPN Port and Enable the Changes..."
+
+sudo ufw allow 1194/udp
+sudo ufw allow 1194/tcp
+sudo ufw disable
+sudo ufw enable
 
 # End
 echo "$head_text DONE. Openvpn is installed and configured successfully"

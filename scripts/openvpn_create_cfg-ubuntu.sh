@@ -172,7 +172,7 @@ function func_generate_server_cfg()
 
 	# Change file
 	## ca.crt
-	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/server/$1 -o "ca " -n "ca ${install_path}/server/ca.crt"
+	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/common/$1 -o "ca " -n "ca ${install_path}/server/ca.crt"
 	
 	## server crt
 	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/server/$1 -o cert -n "cert ${install_path}/server/$2.crt"
