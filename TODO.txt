@@ -1,5 +1,10 @@
 TODO log:
 
+2017-06-18:
+1. client cfg rely on the running machien ($HOME issue)
+2. in install script: ip enable has bug; edit file has to deal with # ipv4_enable=1 issue
+need to change py script to handle multiple comment mark
+
 2017-06-05:
 Create script for generating certificate for client and server
 
