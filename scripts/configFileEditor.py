@@ -17,7 +17,7 @@ import sys
 #
 # return:
 # return the number of replacement happened
-def replaceLineInFile(filename, keyword, newLine, commentSign="", count = -1):
+def replaceLineInFile(filename, keyword, newLine, commentSignList=[], count = -1):
     
     replacedCount = 0
 
@@ -26,7 +26,7 @@ def replaceLineInFile(filename, keyword, newLine, commentSign="", count = -1):
 
         newFileLines = []
         for line in lines:
-            if ( not isComment(line, commentSign) ) and (keyword in line) and (count != 0):
+            if ( not isComment(line, commentSignList) ) and (keyword in line) and (count != 0):
                 
                 newFileLines.append( newLine + "\n" )
                 count -= 1
@@ -46,21 +46,24 @@ def replaceLineInFile(filename, keyword, newLine, commentSign="", count = -1):
 #
 # arguments:
 # @line: the input line of text
-# @commentSign: the comment sign used to mark the line as comment, empty string means no comments in files
-#               <commentSign> will be trimmed first(empty spaces of the beginning and end will be removed)
-def isComment(line, commentSign):
+# @commentSignList: the comment sign list used to mark the line as comment, empty list means no comments in files
+#               <commentSign> in <commentSignList> will be trimmed first(empty spaces of the beginning and end will be removed)
+#               e.g. ["#",";"]
+def isComment(line, commentSignList):
     newLine = line.strip() # remove white spaces
-    commentSign = commentSign.strip() # remove white spaces
 
-    if len(commentSign) == 0:
-        return False
+    for commentSign in commentSignList:
 
-    commentSignLength = len(commentSign)
+        commentSign = commentSign.strip() # remove white spaces
 
-    if newLine[0: commentSignLength] == commentSign:
-        return True
-    else:
-        return False
+        if len(commentSign) == 0:
+            continue
+
+        commentSignLength = len(commentSign)
+
+        if newLine[0: commentSignLength] == commentSign:
+            return True
+    return False
 
 # Skip the comment and add the <newLine> to the first non-comment line of the file
 # 
@@ -68,7 +71,7 @@ def isComment(line, commentSign):
 # @filename: input file name
 # @newLine: the new line of string used for replacement, note a "\n" is needed
 # @commentSign: the comment sign used to mark the line as comment, empty string means no comments in files
-def addLineToBeginning(filename, newLine, commentSign = "#"):
+def addLineToBeginning(filename, newLine, commentSignList = ["#"]):
     
     lines = []
     with codecs.open(filename, "r+", "utf-8") as file:
@@ -77,23 +80,17 @@ def addLineToBeginning(filename, newLine, commentSign = "#"):
         newFileLines = []
 
         isNewLineInserted = False
-        commentSign = commentSign.strip()
+       
+        for line in lines:
 
-        if len(commentSign) > 0:
-            for line in lines:
-
-                # if not comment, insert the line
-                if ( not isComment(line, commentSign) ) and ( not isNewLineInserted ):
-                    newFileLines.append( newLine + "\n" )
-                    isNewLineInserted = True
-                newFileLines.append(line)
-
-            if not isNewLineInserted:
+            # if not comment, insert the line
+            if ( not isComment(line, commentSignList) ) and ( not isNewLineInserted ):
                 newFileLines.append( newLine + "\n" )
+                isNewLineInserted = True
+            newFileLines.append(line)
 
-        else:
+        if not isNewLineInserted:
             newFileLines.append( newLine + "\n" )
-            newFileLines.extend(lines)
 
     # Write to file
     with codecs.open(filename, "w", "utf-8") as file:

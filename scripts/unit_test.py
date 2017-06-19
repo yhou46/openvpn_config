@@ -6,7 +6,7 @@ def test_isComment():
 	count = 1
 	# input
 	line = "# jaklsfjklsdjfa;l"
-	commentSymbol = "#"
+	commentSymbol = ["#"]
 
 	# output
 	result = configFileEditor.isComment(line, commentSymbol)
@@ -20,7 +20,7 @@ def test_isComment():
 	# Test 2
 	# input
 	line = "   # jaklsfjklsdjfa;l"
-	commentSymbol = " #"
+	commentSymbol = [" #"]
 
 	# output
 	result = configFileEditor.isComment(line, commentSymbol)
@@ -34,7 +34,7 @@ def test_isComment():
 	# Test 3
 	# input
 	line = "# jaklsfjklsdjfa;l"
-	commentSymbol = "//"
+	commentSymbol = ["//"]
 
 	# output
 	result = configFileEditor.isComment(line, commentSymbol)
@@ -48,7 +48,7 @@ def test_isComment():
 	# Test 4
 	# input
 	line = "// jaklsfjklsdjfa;l"
-	commentSymbol = "//"
+	commentSymbol = ["//"]
 
 	# output
 	result = configFileEditor.isComment(line, commentSymbol)
@@ -62,7 +62,7 @@ def test_isComment():
 	# Test 5
 	# input
 	line = "/* jaklsfjklsdjfa;l"
-	commentSymbol = "//"
+	commentSymbol = ["//"]
 
 	# output
 	result = configFileEditor.isComment(line, commentSymbol)
@@ -77,7 +77,7 @@ def test_isComment():
 	# Test 6
 	# input
 	line = "/* jaklsfjklsdjfa;l"
-	commentSymbol = ""
+	commentSymbol = [""]
 
 	# output
 	result = configFileEditor.isComment(line, commentSymbol)
@@ -88,10 +88,25 @@ def test_isComment():
 		print("\nError Test ", count, ":\ninput: ", line, ", ", commentSymbol, "\noutput: ", result, "\nexpected: ", str(False), "\n")
 	count += 1
 
+	# Test 7
+	# input
+	line = "/; jaklsfjklsdjfa;l"
+	commentSymbol = ["//", ";"]
+
+	# output
+	result = configFileEditor.isComment(line, commentSymbol)
+
+	if result != True:
+		print("TEST ", count, " passed")
+	else:
+		print("\nError Test ", count, ":\ninput: ", line, ", ", commentSymbol, "\noutput: ", result, "\nexpected: ", str(False), "\n")
+	count += 1
+
+
 def test_addLineToBeginning():
 
-	configFileEditor.addLineToBeginning("../test/test_doc.txt", "hello\n", 
-										commentSign = "")
+	configFileEditor.addLineToBeginning("../test/test.doc", "hello\n", 
+										commentSignList = ["#", ";"])
 
 def test_replaceLineInFile():
 
@@ -105,9 +120,9 @@ if __name__ == "__main__":
 	
 	#test_isComment() 
 
-	#test_addLineToBeginning()
+	test_addLineToBeginning()
 
-	test_replaceLineInFile()
+	#test_replaceLineInFile()
 
 
 

@@ -78,7 +78,7 @@ def enableUfwForwardedPackets(filename):
     configFileEditor.replaceLineInFile(filename = filename, 
                                         keyword = "DEFAULT_FORWARD_POLICY", 
                                         newLine = "DEFAULT_FORWARD_POLICY=\"ACCEPT\"", 
-                                        commentSign="#", 
+                                        commentSign=["#"], 
                                         count = 1)
     return
 
@@ -126,7 +126,7 @@ def main(inputArgs):
             configFileEditor.replaceLineInFile(filename = filename, 
                                         keyword = parsedArgs.old, 
                                         newLine = parsedArgs.new, 
-                                        commentSign="#", 
+                                        commentSign=["#",";"], 
                                         count = 1)
         else:
             print("Error: no -o and -n command specified in <replace> mode, please see help for instructions")
