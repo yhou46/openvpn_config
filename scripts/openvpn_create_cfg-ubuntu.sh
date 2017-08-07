@@ -173,7 +173,7 @@ function func_generate_server_cfg()
 	# Change file
 	## ca.crt
 	echo "${head_text} Changing ca crt path..."
-	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/common/$1 -o "ca " -n "ca ${install_path}/server/ca.crt"
+	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/server/$1 -o "ca " -n "ca ${install_path}/common/ca.crt"
 	status=$?
 	if [ $status != 0 ]; then
 		echo "${head_text} Failed to changing ca crt path..."
