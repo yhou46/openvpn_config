@@ -70,7 +70,7 @@ def changeUfwBeforeRules(filename, publicInterfaceName):
                     "COMMIT\n" + \
                     "# END OPENVPN RULES\n\n"
 
-    configFileEditor.addLineToBeginning(filename, insertLine, commentSign = "#")
+    configFileEditor.addLineToBeginning(filename, insertLine, commentSignList = ["#"])
     return
 
 def enableUfwForwardedPackets(filename):
@@ -78,7 +78,7 @@ def enableUfwForwardedPackets(filename):
     configFileEditor.replaceLineInFile(filename = filename, 
                                         keyword = "DEFAULT_FORWARD_POLICY", 
                                         newLine = "DEFAULT_FORWARD_POLICY=\"ACCEPT\"", 
-                                        commentSign=["#"], 
+                                        commentSignList =["#"], 
                                         count = 1)
     return
 
@@ -126,7 +126,7 @@ def main(inputArgs):
             configFileEditor.replaceLineInFile(filename = filename, 
                                         keyword = parsedArgs.old, 
                                         newLine = parsedArgs.new, 
-                                        commentSign=["#",";"], 
+                                        commentSignList = ["#",";"], 
                                         count = 1)
         else:
             print("Error: no -o and -n command specified in <replace> mode, please see help for instructions")
