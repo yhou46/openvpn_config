@@ -214,12 +214,12 @@ function func_generate_client_cfg()
 
 	# Change file
 	## ca.crt
-	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/client/$1 -o "ca " -n "ca ${install_path}/client/ca.crt"
+	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/client/$1 -o "ca " -n "ca ${install_path}/common/ca.crt"
 	
-	## server crt
+	## client crt
 	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/client/$1 -o cert -n "cert ${install_path}/client/$2.crt"
 
-	## server key
+	## client key
 	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/client/$1 -o "key client.key" -n "key ${install_path}/client/$2.key # This file should be kept secret"
 
 	## host name and port

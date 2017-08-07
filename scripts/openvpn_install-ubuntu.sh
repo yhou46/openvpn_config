@@ -2,7 +2,7 @@
 # openvpn server installation
 
 # Debug variable
-step=5
+step=6
 
 # Global variable
 work_path="."
