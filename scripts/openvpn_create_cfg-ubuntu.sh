@@ -172,17 +172,42 @@ function func_generate_server_cfg()
 
 	# Change file
 	## ca.crt
+	echo "${head_text} Changing ca crt path..."
 	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/common/$1 -o "ca " -n "ca ${install_path}/server/ca.crt"
-	
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to changing ca crt path..."
+		exit 1
+	fi
+
 	## server crt
+	echo "${head_text} Changing server crt path..."
 	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/server/$1 -o cert -n "cert ${install_path}/server/$2.crt"
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to changing server crt path..."
+		exit 1
+	fi
 
 	## server key
+	echo "${head_text} Changing server key path..."
 	python3 ${work_path}/${edit_file_script} -m replace -f ${install_path}/server/$1 -o key -n "key ${install_path}/server/$2.key # This file should be kept secret"
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to changing server key path..."
+		exit 1
+	fi
 
 	## dh file
+	echo "${head_text} Changing dh path..."
 	dh_file=$(basename "${install_path}/server/dh*.pem")
 	${work_path}/${edit_file_script} -m replace -f ${install_path}/server/$1 -o dh -n "dh ${install_path}/server/${dh_file}"
+	status=$?
+	if [ $status != 0 ]; then
+		echo "${head_text} Failed to changing dh path..."
+		exit 1
+	fi
+
 
 	echo "${head_text} SUCCESS! $1 is saved to path: ${install_path}/server/$1"
 }
