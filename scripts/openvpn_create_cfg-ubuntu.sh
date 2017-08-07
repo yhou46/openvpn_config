@@ -222,6 +222,12 @@ function func_generate_client_cfg()
 	echo "${head_text} Generating client cfg file: $1"
 	echo "${head_text} This function is highly dependent on the sample config file!!!"
 	
+	# Check if host name and port is given
+	if [ "$host_name" == "unknown" ] || [ "$port" == "unknown" ]
+		echo "${head_text} Please give host name and port using -h and -p"
+		exit 1
+	fi
+
 	# Check if sample config file exists
 	if [ ! -d "${sample_cfg_path}" ]; then
 		echo "${head_text} Error: sample config file: ${sample_cfg_path} cannot be found!"
@@ -273,7 +279,7 @@ arguments:\n
 \t\t server_cert: create server certificate, used with -s server name\n
 \t\t server_cfg: create server configuration, used with -s server name\n
 \t\t client_cert: create client certificate, used with -c client name\n
-\t\t client_cfg: create client configuration, used with -s(optional), -r(required) , -p(required)\n
+\t\t client_cfg: create client configuration, used with -c(optional), -r(required) , -p(required)\n
 
 \t-e/--e_path: easy-rsa path\n
 \t-i/--i_path: installation path\n
