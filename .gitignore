@@ -232,4 +232,5 @@ config/
 keys/
 test/
 easy-rsa/
+backup/
 
