@@ -224,7 +224,7 @@ function func_generate_client_cfg()
 	
 	# Check if host name and port is given
 	if [ "$host_name" == "unknown" ] || [ "$port" == "unknown" ]; then
-		echo "${head_text} Please give host name and port using -h and -p"
+		echo "${head_text} Please give host name and port using -r and -p"
 		exit 1
 	fi
 

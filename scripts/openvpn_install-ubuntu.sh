@@ -245,6 +245,7 @@ echo "$head_text Open the OpenVPN Port and Enable the Changes..."
 
 sudo ufw allow 1194/udp
 sudo ufw allow 1194/tcp
+sudo ufw allow ssh
 sudo ufw disable
 sudo ufw enable
 
