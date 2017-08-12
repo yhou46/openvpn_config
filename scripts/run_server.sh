@@ -35,7 +35,7 @@ function start_vpn_server()
 
     # Start server
     echo "Starting openvpn server..."
-    sudo openvpn config_path
+    sudo openvpn ${config_path}
     status=$?
     if [ $status != 0 ]; then
         echo "Failed to start openvpn server, exit..."
@@ -45,12 +45,14 @@ function start_vpn_server()
 
 # -------------
 #### Main
-config_path="~/bin/openvpn_cfg/default/server/openvpn_server1.conf"
+
+# Cannot add "" to the path variable, don't know why???
+config_path=~/bin/openvpn_cfg/default/server/openvpn_server1.conf
 
 if [ $# -gt 0 ] && [ $1 == "stop" ]; then
     stop_vpn_server
 else
-    start_vpn_server config_path
+    start_vpn_server $config_path
 fi
 
 
