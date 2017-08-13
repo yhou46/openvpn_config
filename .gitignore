@@ -234,4 +234,5 @@ test/
 easy-rsa/
 backup/
 ipp.txt
-
+temp/
+.DS_Store
