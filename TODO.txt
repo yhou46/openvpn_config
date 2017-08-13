@@ -1,5 +1,11 @@
 TODO log:
 
+2017-08-12:
+1. Research in openvpn log: make it like log.date format
+2. Write script to generate client install package
+3. Add server script to install path, like ~/openvpn_cfg/default/run_server.sh
+
+
 2017-06-18:
 1. client cfg rely on the running machien ($HOME issue)
 2. in install script: ip enable has bug; edit file has to deal with # ipv4_enable=1 issue
