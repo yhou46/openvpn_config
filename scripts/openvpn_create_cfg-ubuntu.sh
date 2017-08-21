@@ -287,6 +287,7 @@ arguments:\n
 \t-c/--c_name: client name\n
 \t-r/--remote: remote host name for client connection\n
 \t-p/--port: remote host port for client connection\n
+\t-o/--openvpn_name: openvpn_name used in install path; default value is <default>
 
 EOM
 
@@ -331,6 +332,11 @@ case $key in
     port="$2"
     shift # past argument
     ;;
+
+    -o|--openvpn_name) # openvpn_name; used in install path
+	openvpn_name="$2"
+	shift
+	;;
 
     -h|--help)
     echo -e ${help_message}

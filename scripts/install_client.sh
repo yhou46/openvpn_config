@@ -350,6 +350,7 @@ arguments:\n
 
 \t-c/--client_name: client name\n
 \t-o/--output_path: output file path\n
+\t-s/--openvpn_name: openvpn_name used in install path\n
 \t-h/--help: show this help page\n
 
 EOM

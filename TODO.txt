@@ -4,7 +4,8 @@ TODO log:
 1. Research in openvpn log: make it like log.date format
 2. Write script to generate client install package
 3. Add server script to install path, like ~/openvpn_cfg/default/run_server.sh
-
+4. run_server.sh need to add config file option
+5. create cfg script have a bug: dh path has dh*.pem which need to be changed to dh2048.pem
 
 2017-06-18:
 1. client cfg rely on the running machien ($HOME issue)
