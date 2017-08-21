@@ -345,13 +345,22 @@ function install_cfg_to_path()
 read -r -d '' help_message <<- EOM
 usage: $0 -m/--mode MODE [-c/--client_name] [-o/--output_path]\n
 arguments:\n
-\t-m/--mode: {fetch}\n
+\t-m/--mode: {fetch, install, reset, uninstall}\n
 \t\t fetch: get all client config files and compress them into one, used with -c(required), -o(optional), -s(optional)\n
+\t\t install: install client config files to install_path, used with -c(required), -s(optional), -i(optional)\n
+\t\t reset: remove all config files under {install_path}/{openvpn_name} and re-create the folders; Be careful!
+			used with -i(required), -s(required)\n
+\t\t uninstall: remove all config files under {install_path}/{openvpn_name}; Be careful! 
+				used with -i(required), -s(required)\n
 
 \t-c/--client_name: client name\n
 \t-o/--output_path: output file path\n
-\t-s/--openvpn_name: openvpn_name used in install path\n
+\t-s/--openvpn_name: openvpn_name used in install path; 
+					 All files belonging to this openvpn will be saved under {install_path}/{openvpn_name}\n
+\t-i/--install_path: installation path for all config files\n
+
 \t-h/--help: show this help page\n
+
 
 EOM
 

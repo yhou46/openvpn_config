@@ -21,7 +21,12 @@ port="unknown"
 work_path="." # The path of all the scripts, temporary file location
 easyrsa_path="unknown" # easy-rsa install path
 log_path="${work_path}/log" # Path of log file; Not using right now
-install_path="${HOME}/bin/openvpn_cfg/${openvpn_name}" # Path of all config files
+
+# Path of all config files, it should always the same with $install_path_relative
+install_path="${HOME}/bin/openvpn_cfg/${openvpn_name}"
+# Relative path of all config files, it should always the same with $install_path
+install_path_relative="~/bin/openvpn_cfg/${openvpn_name}" 
+
 sample_cfg_path="${work_path}/../sample_config"
 
 ## Other scripts
