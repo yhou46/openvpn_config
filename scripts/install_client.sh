@@ -73,18 +73,11 @@ function fetch_files_from_path()
 	# Copy all files to temp directory
 	echo "Copying necessary files to temp directory..."
 	
-	## ca.crt,  ca.key
+	## ca.crt
 	cp "${install_path}/${openvpn_name}/common/ca.crt" "${temp_path}/"
 	status=$?
 	if [ $status != 0 ]; then
 		echo "Failed to copy file: ${install_path}/common/ca.crt"
-		exit 1
-	fi
-
-	cp "${install_path}/${openvpn_name}/common/ca.key" "${temp_path}/"
-	status=$?
-	if [ $status != 0 ]; then
-		echo "Failed to copy file: ${install_path}/common/ca.key"
 		exit 1
 	fi
 
@@ -304,13 +297,6 @@ function install_cfg_to_path()
 	status=$?
 	if [ $status != 0 ]; then
 		echo "Failed to copy file: ./ca.crt to path: ${install_path}/${openvpn_name}/common/"
-		exit 1
-	fi
-
-	cp "./ca.key" "${install_path}/${openvpn_name}/common/ca.key"
-	status=$?
-	if [ $status != 0 ]; then
-		echo "Failed to copy file: ./ca.key to path: ${install_path}/${openvpn_name}/common/"
 		exit 1
 	fi
 
