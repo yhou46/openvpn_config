@@ -1,0 +1,28 @@
+openVPN 安装方法 - 傻瓜教程：
+
+IOS：
+1. 双击压缩包 *tar.gz解压，解压成功则同名的文件夹会出现在当前目录
+2. 连接手机到电脑，打开itunes
+3. 在itunes: 点击手机图标进入手机管理界面 -> 点击左侧竖条菜单的应用图标 -> 在右侧滑动滚轮向下直到找到文件共享菜单（将鼠标移动到空白处在滑动，否则会在应用菜单下滑动）
+4. 在文件共享界面，选择openVPN 的APP，选择添加 -> 找到解压后的路径 -> 一次性选中4个文件（ca.crt, <client>.crt, <client>.ovpn, <client>.crt; <client>指的是用户名字，例如hyq_client） -> 添加四个文件到手机
+5. 打开手机openVPN APP，应该发现多出了选项，点击绿色加号添加新的客户端
+6. 选择客户端进行连接
+
+MAC：
+1. 双击压缩包 *tar.gz解压，解压成功则同名的文件夹会出现在当前目录
+2. 打开Terminal: command+空格 进行搜索，关键词：终端，或者 terminal
+3. 把刚才解压的文件夹中的 install_client.sh 拖拽进Terminal; 
+   应该看到Terminal中多了一行：大概是“<path to script>/install_client.sh”
+   例如： “/Users/yunpenghou/Documents/workspace/test_folder/hyq_client/install_client.sh”
+4. 在之后输入“ -m reset -i ~/bin/openvpn_cfg -s default”, 请备份“~/bin/openvpn_cfg/default”下的所有文件
+   如果成果会有 SUCCESS 或者 DONE 的提示
+   整个命令的例子：
+   “/Users/yunpenghou/Documents/workspace/test_folder/hyq_client/install_client.sh  -m reset -i ~/bin/openvpn_cfg -s default”
+5. 接着输入如下格式的命令
+   “/Users/yunpenghou/Documents/workspace/test_folder/hyq_client/install_client.sh -m install -c <client-name>”
+   其中<client_name>是其他客户端文件除了后缀名的部分，例如 hyq_client
+   完整命令的例子：
+   “/Users/yunpenghou/Documents/workspace/test_folder/hyq_client/install_client.sh -m install -c hyq_client”
+   如果成功会有 SUCCESS 或者 DONE 的提示
+6. 打开Tunnelblick ->点击“+”添加配置文件（*.ovpn）,如果成功Tunnelblick会有提示，如果失败请按照提示操作
+7. 选择客户端连接VPN
