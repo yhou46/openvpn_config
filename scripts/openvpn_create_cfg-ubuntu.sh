@@ -290,8 +290,8 @@ arguments:\n
 \t-i/--i_path: installation path\n
 \t-s/--s_name: server name\n
 \t-c/--c_name: client name\n
-\t-r/--remote: remote host name for client connection\n
-\t-p/--port: remote host port for client connection\n
+\t-r/--remote: remote host name for client connection, e.g. ip address\n
+\t-p/--port: remote host port for client connection; 1194 is usually used as port for openvpn\n
 \t-o/--openvpn_name: openvpn_name used in install path; default value is <default>
 
 EOM

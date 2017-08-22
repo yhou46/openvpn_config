@@ -103,7 +103,8 @@ function fetch_files_from_path()
 		exit 1
 	fi
 
-	cp "${install_path}/${openvpn_name}/client/${client_name}.conf" "${temp_path}/"
+	# For config files for IOS openvpn app, postfix must be *.ovpn; So change the file postfix when copied
+	cp "${install_path}/${openvpn_name}/client/${client_name}.conf" "${temp_path}/${client_name}.ovpn"
 	status=$?
 	if [ $status != 0 ]; then
 		echo "Failed to copy file: ${install_path}/client/${client_name}.conf"
