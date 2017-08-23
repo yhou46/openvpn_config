@@ -300,7 +300,7 @@ function install_cfg_to_path()
 		exit 1
 	fi
 
-	## client.key, client.crt client.conf
+	## client.key, client.crt client.ovpn
 	cp "./${client_name}.key" "${install_path}/${openvpn_name}/client/"
 	status=$?
 	if [ $status != 0 ]; then
@@ -315,7 +315,7 @@ function install_cfg_to_path()
 		exit 1
 	fi
 
-	cp "./${client_name}.conf" "${install_path}/${openvpn_name}/client/"
+	cp "./${client_name}.ovpn" "${install_path}/${openvpn_name}/client/"
 	status=$?
 	if [ $status != 0 ]; then
 		echo "Failed to copy file: ${client_name}.conf to path: ${install_path}/${openvpn_name}/client/"
