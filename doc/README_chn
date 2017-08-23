@@ -14,6 +14,12 @@ MAC：
 3. 把刚才解压的文件夹中的 install_client.sh 拖拽进Terminal; 
    应该看到Terminal中多了一行：大概是“<path to script>/install_client.sh”
    例如： “/Users/yunpenghou/Documents/workspace/test_folder/hyq_client/install_client.sh”
+
+   cd 进入目录：“cd <path to directory>”
+   比如上面的例子，<path to directory> = "/Users/yunpenghou/Documents/workspace/test_folder/hyq_client"
+   应该输入命令：“cd /Users/yunpenghou/Documents/workspace/test_folder/hyq_client”
+   如果失败会有提示
+
 4. 在之后输入“ -m reset -i ~/bin/openvpn_cfg -s default”, 请备份“~/bin/openvpn_cfg/default”下的所有文件
    如果成果会有 SUCCESS 或者 DONE 的提示
    整个命令的例子：
