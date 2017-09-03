@@ -205,7 +205,7 @@ function func_generate_server_cfg()
 
 	## dh file
 	echo "${head_text} Changing dh path..."
-	dh_file=$(basename "${install_path}/server/dh*.pem")
+	dh_file=$(basename "${install_path}/server/dh2048.pem")
 	${work_path}/${edit_file_script} -m replace -f ${install_path}/server/$1 -o dh -n "dh ${install_path}/server/${dh_file}"
 	status=$?
 	if [ $status != 0 ]; then

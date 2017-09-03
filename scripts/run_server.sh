@@ -56,7 +56,7 @@ function start_vpn_server()
 #### Main
 
 # Cannot add "" to the path variable, don't know why???
-config_path=~/bin/openvpn_cfg/default/server/openvpn_server1.conf
+config_path=~/bin/openvpn_cfg/default/server/openvpn-server-aws.conf
 
 if [ $# -gt 0 ]; then
     if [ $1 == "stop" ]; then
