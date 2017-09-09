@@ -236,3 +236,4 @@ backup/
 ipp.txt
 temp/
 .DS_Store
+*log*

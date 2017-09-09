@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Stop server
-function stop_vpn_server()
+# Stop all servers
+function stop_all_vpn_servers()
 {
     # Check if openvpn is running
     if [[ $(pgrep openvpn) ]]; then
@@ -23,15 +23,46 @@ function stop_vpn_server()
     fi
 }
 
+# Stop openvpn server with the config file
+# $1 config file path
+function stop_vpn_server()
+{
+    config_path=$1
 
-# Start server
+    # Get pid of the target process if any
+    server_pid=$(pgrep -a openvpn | grep ${config_path} | awk '{ print $1; }') 
+
+    echo "server pid is ${server_pid}"
+
+    # Check if openvpn is running
+    if [[ -z ${server_pid} ]]; then
+
+        echo "Stopping vpn server with config file: ${config_path}..."
+        kill -SIGINT server_pid
+
+        # Sleep for 2 seconds and waiting for server to stop
+        sleep 2
+
+        # Check if it is stopped
+        if [[ $(pgrep -a openvpn | grep ${config_path}) ]]; then
+            echo "Error: Failed to stop openvpn server..."
+            exit 1
+        fi
+
+    else
+        echo "Openvpn server is already down..."
+    fi
+}
+}
+
+# Restart server
 # $1 path to server config file
-function start_vpn_server()
+function restart_vpn_server()
 {
     config_path=$1
 
     # Stop server first
-    stop_vpn_server
+    stop_vpn_server ${config_path}
 
     # Start server
     echo "Starting openvpn server..."
@@ -49,34 +80,91 @@ function start_vpn_server()
         echo "Failed to start openvpn server, exit..."
         exit 1
     fi
-    
+}
+
+# Start openvpn server if not started; Do not stop if it is already started
+# $1 path to server config file
+function start_vpn_server_without_stop()
+{
+    config_path=$1
+
+    # Start server
+    echo "Starting openvpn server..."
+    openvpn ${config_path} &
+    status=$?
+    if [ $status != 0 ]; then
+        echo "Failed to start openvpn server, exit..."
+        exit 1
+    fi
+
+    # Check if server is up
+    if [[ $(pgrep openvpn) ]]; then
+        echo "Openvpn server started successfully!"
+    else
+        echo "Failed to start openvpn server, exit..."
+        exit 1
+    fi
 }
 
 # -------------
 #### Main
 
 # Cannot add "" to the path variable, don't know why???
-config_path=~/bin/openvpn_cfg/default/server/openvpn-server-aws.conf
+# Just for reference
+tcp_server_config_path=~/bin/openvpn_cfg/default/server/openvpn-server-aws.conf
+udp_server_config_path=~/bin/openvpn_cfg/default/server/openvpn-server-aws-udp.conf
 
 if [ $# -gt 0 ]; then
-    if [ $1 == "stop" ]; then
-        stop_vpn_server
-    else
-        if [ $1 == "help" ]; then
+
+    case $1 in
+
+        "stopall")
+            echo "All openvpn servers will be stopped..."
+            stop_all_vpn_servers
+        ;;
+
+        "stop")
+            if [ $# -gt 1 ]; then
+                config_path=$2
+                stop_vpn_server $config_path
+            else
+                echo "Missing config file path"
+                echo "Please run like this: <run_server.h stop config_path>"
+                echo "Please run <run_server.h help> for details"
+                exit 1
+            fi
+        ;;
+
+        "start")
+            if [ $# -gt 1 ]; then
+                config_path=$2
+                restart_vpn_server $config_path
+            else
+                echo "Missing config file path"
+                echo "Please run like this: <run_server.h start config_path>"
+                echo "Please run <run_server.h help> for details"
+                exit 1
+            fi
+        ;;
+
+        "help")
             echo "Help page:"
-            echo -e "\trun_server.sh -> stop running openvpn server if possible and restart"
-            echo -e "\trun_server.sh stop -> stop running openvpn server"
+            echo -e "\trun_server.sh restart <config_path>: restart running server"
+            echo -e "\trun_server.sh stop -> stop all running openvpn servers"
             echo -e "\trun_server.sh help -> show this help page"
             exit 0
-        else
+        ;;
+
+        *) # Unknown option
             echo "Unknown command: $1"
             echo "Please run <run_server.h help> to see the available commands"
-            exit 1
-        fi
-    fi
+            exit 1    
+        ;;
 
+    esac
 else
-    start_vpn_server $config_path
+    echo "Missing necessary arguments"
+    echo "Please run <run_server.h help> for details"
 fi
 
 
