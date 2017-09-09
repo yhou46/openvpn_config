@@ -1,5 +1,17 @@
 #!/bin/bash
 
+#--------------
+#### Global variables
+
+# All server config files
+# Cannot add "" to the path variable, don't know why???
+# Just for reference
+tcp_server_config_path=~/bin/openvpn_cfg/default/server/openvpn-server-aws.conf
+udp_server_config_path=~/bin/openvpn_cfg/default/server/openvpn-server-aws-udp.conf
+
+#--------------
+#### All functions
+
 # Stop all servers
 function stop_all_vpn_servers()
 {
@@ -82,38 +94,11 @@ function restart_vpn_server()
     fi
 }
 
-# Start openvpn server if not started; Do not stop if it is already started
-# $1 path to server config file
-function start_vpn_server_without_stop()
-{
-    config_path=$1
 
-    # Start server
-    echo "Starting openvpn server..."
-    openvpn ${config_path} &
-    status=$?
-    if [ $status != 0 ]; then
-        echo "Failed to start openvpn server, exit..."
-        exit 1
-    fi
-
-    # Check if server is up
-    if [[ $(pgrep openvpn) ]]; then
-        echo "Openvpn server started successfully!"
-    else
-        echo "Failed to start openvpn server, exit..."
-        exit 1
-    fi
-}
-
-# -------------
+#--------------
 #### Main
 
-# Cannot add "" to the path variable, don't know why???
-# Just for reference
-tcp_server_config_path=~/bin/openvpn_cfg/default/server/openvpn-server-aws.conf
-udp_server_config_path=~/bin/openvpn_cfg/default/server/openvpn-server-aws-udp.conf
-
+# Read arguments and parse
 if [ $# -gt 0 ]; then
 
     case $1 in
