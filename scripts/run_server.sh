@@ -35,10 +35,10 @@ function stop_vpn_server()
     echo "server pid is ${server_pid}"
 
     # Check if openvpn is running
-    if [[ -z ${server_pid} ]]; then
+    if [[ ! -z ${server_pid} ]]; then
 
         echo "Stopping vpn server with config file: ${config_path}..."
-        kill -SIGINT server_pid
+        kill -SIGINT ${server_pid}
 
         # Sleep for 2 seconds and waiting for server to stop
         sleep 2
@@ -53,7 +53,7 @@ function stop_vpn_server()
         echo "Openvpn server is already down..."
     fi
 }
-}
+
 
 # Restart server
 # $1 path to server config file
@@ -74,7 +74,7 @@ function restart_vpn_server()
     fi
 
     # Check if server is up
-    if [[ $(pgrep openvpn) ]]; then
+    if [[ $(pgrep -a openvpn | grep ${config_path}) ]]; then
         echo "Openvpn server started successfully!"
     else
         echo "Failed to start openvpn server, exit..."
@@ -149,9 +149,10 @@ if [ $# -gt 0 ]; then
 
         "help")
             echo "Help page:"
-            echo -e "\trun_server.sh restart <config_path>: restart running server"
-            echo -e "\trun_server.sh stop -> stop all running openvpn servers"
-            echo -e "\trun_server.sh help -> show this help page"
+            echo -e "\trun_server.sh start <config_path>: start running server with config file"
+            echo -e "\trun_server.sh stop <config_path>: stop running openvpn servers with config file"
+            echo -e "\trun_server.sh stopall: stop all running openvpn servers"
+	    echo -e "\trun_server.sh help -> show this help page"
             exit 0
         ;;
 
