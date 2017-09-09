@@ -94,6 +94,11 @@ function restart_vpn_server()
     fi
 }
 
+# Show all running openvpn status
+function show_openvpn_status()
+{
+    echo $(ps -ef | grep openvpn)
+}
 
 #--------------
 #### Main
@@ -132,12 +137,17 @@ if [ $# -gt 0 ]; then
             fi
         ;;
 
+        "status")
+            show_openvpn_status
+        ;;
+
         "help")
             echo "Help page:"
             echo -e "\trun_server.sh start <config_path>: start running server with config file"
             echo -e "\trun_server.sh stop <config_path>: stop running openvpn servers with config file"
             echo -e "\trun_server.sh stopall: stop all running openvpn servers"
-	    echo -e "\trun_server.sh help -> show this help page"
+            echo -e "\trun_server.sh status: show all running openvpn server status"
+            echo -e "\trun_server.sh help: show this help page"
             exit 0
         ;;
 
