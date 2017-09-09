@@ -97,7 +97,7 @@ function restart_vpn_server()
 # Show all running openvpn status
 function show_openvpn_status()
 {
-    echo $(ps -ef | grep openvpn)
+    ps -ef | grep openvpn
 }
 
 #--------------
