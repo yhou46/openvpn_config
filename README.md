@@ -1,6 +1,16 @@
 # openvpn_config
 scripts for install openvpn
 
+Quick start:
+1. Install openvpn in ubuntu system:
+run openvpn_install-ubuntu.sh
+
+2. Generate server/client config file:
+run openvpn_create_cfg-ubuntu.sh
+
+3. Install client configuration:
+Please see doc
+
 Notes:
 1. Server: 1194 -> tcp; 1195 -> udp
 
