@@ -52,6 +52,7 @@ function func_install_package()
 	if [ $status != 0 ]; then
 		echo -e "\n$head_text $packagename will be installed on this machine now..."
 		sudo apt-get update
+		sudo apt-get upgrade
 		sudo apt-get install $packagename
 		status=$?
 		if [ $status != 0 ]; then
