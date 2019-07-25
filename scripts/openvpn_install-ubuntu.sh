@@ -247,6 +247,9 @@ echo "$head_text Open the OpenVPN Port and Enable the Changes..."
 sudo ufw allow 1194/udp
 sudo ufw allow 1194/tcp
 
+# enable port 443 for stunnel
+sudo ufw allow 443/tcp
+
 # Make 1195 udp port
 sudo ufw allow 1195/udp
 
